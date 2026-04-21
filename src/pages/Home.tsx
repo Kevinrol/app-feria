@@ -1,68 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { CareerCard } from '../components/CareerCard';
 import { ProjectCard } from '../components/ProjectCard';
 import { MonitorPlay, Landmark, Megaphone, Briefcase, Building2, Globe } from 'lucide-react';
 import incosLogo from '../assets/LOGOINCOS.png';
 import incosCover from '../assets/incos_cover.jpg';
+import { fetchProjects, fetchCareers } from '../api/fetch';
+
+const IconMap: Record<string, React.ReactNode> = {
+  MonitorPlay: <MonitorPlay className="w-6 h-6" />,
+  Landmark: <Landmark className="w-6 h-6" />,
+  Megaphone: <Megaphone className="w-6 h-6" />,
+  Briefcase: <Briefcase className="w-6 h-6" />,
+  Building2: <Building2 className="w-6 h-6" />,
+  Globe: <Globe className="w-6 h-6" />
+};
 
 export const Home: React.FC = () => {
-  const careers = [
-    {
-      icon: <MonitorPlay className="w-6 h-6" />,
-      title: "Sistemas Informáticos",
-      description: "Desarrollo de software, IA y soluciones tecnológicas avanzadas."
-    },
-    {
-      icon: <Landmark className="w-6 h-6" />,
-      title: "Contaduría General",
-      description: "Gestión financiera estratégica y auditoría corporativa."
-    },
-    {
-      icon: <Megaphone className="w-6 h-6" />,
-      title: "Mercadotecnia",
-      description: "Investigación de mercados y estrategias de posicionamiento digital."
-    },
-    {
-      icon: <Briefcase className="w-6 h-6" />,
-      title: "Secretariado Ejecutivo",
-      description: "Alta gestión administrativa y comunicación institucional."
-    },
-    {
-      icon: <Building2 className="w-6 h-6" />,
-      title: "Administración de Empresas",
-      description: "Liderazgo organizacional y optimización de recursos técnicos."
-    },
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: "Lingüística",
-      description: "Comunicación bilingüe técnica aplicada al comercio exterior."
-    }
-  ];
+  const [careers, setCareers] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
-  const projects = [
-    {
-      id: "1",
-      imageSrc: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Innovación Digital",
-      title: "Sistema IA para Gestión de Almacenes Pyme",
-      description: "Implementación de modelos predictivos para la optimización de inventarios en empresas comerciales de El Alto."
-    },
-    {
-      id: "2",
-      imageSrc: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Finanzas Éticas",
-      title: "Auditoría Digital en el Marco de la Ley 1448",
-      description: "Análisis de la transición digital para la transparencia tributaria en cooperativas locales."
-    },
-    {
-      id: "3",
-      imageSrc: "https://images.unsplash.com/photo-1533580556209-77f0a71676ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      category: "Trade Marketing",
-      title: "Omnicanalidad en el Comercio Minorista Alteño",
-      description: "Estrategias de integración entre puntos de venta físicos y plataformas digitales."
-    }
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      const projs = await fetchProjects();
+      const cars = await fetchCareers();
+      setProjects(projs);
+      setCareers(cars);
+    };
+    loadData();
+  }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -90,15 +59,19 @@ export const Home: React.FC = () => {
             </div>
             <h1 className="font-heading text-5xl lg:text-6xl font-extrabold text-[#064e3b] tracking-tight leading-tight mb-6">
               Feria de <br/>
-              <span className="text-[#059669]">Innovación</span> <br/>
+              <span className="font-heading text-[#059669]">Innovación</span> <br/>
               Tecnológica
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">
               Impulsando el talento técnico y comercial de la ciudad de El Alto. Descubre las soluciones disruptivas creadas por nuestra comunidad académica.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-               <Button variant="primary">Explorar Proyectos</Button>
-               <Button variant="secondary">Ver Resultados</Button>
+               <a href="#proyectos">
+                 <Button variant="primary">Explorar Proyectos</Button>
+               </a>
+               <Link to="/resultados">
+                 <Button variant="secondary">Ver Resultados</Button>
+               </Link>
             </div>
           </div>
           
@@ -121,18 +94,18 @@ export const Home: React.FC = () => {
       {/* Careers Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-          <h2 className="font-heading text-3xl font-bold text-[#005c4b] mb-12 inline-flex flex-col">
+          <h2 className="font-heading text-3xl font-bold mb-12 inline-flex flex-col">
             Carreras Participantes
-            <span className="w-12 h-1 bg-[#005c4b] mt-3"></span>
+            <span className="w-12 h-1 bg-[#059669] mt-3"></span>
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {careers.map((career, idx) => (
               <CareerCard 
-                key={idx}
-                icon={career.icon}
-                title={career.title}
-                description={career.description}
+                key={career.id_carrera || idx}
+                icon={career.icon && IconMap[career.icon] ? IconMap[career.icon] : <MonitorPlay className="w-6 h-6" />}
+                title={career.nombre_carrera || career.title}
+                description={career.descripcion || career.description || "Carrera técnica del INCOS El Alto."}
               />
             ))}
           </div>
@@ -144,29 +117,51 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-10 border-b border-gray-200 pb-6">
             <div>
-              <h2 className="text-3xl font-bold text-[#005c4b] mb-2">Catálogo de Proyectos</h2>
+              <h2 className="font-heading text-3xl font-bold mb-2">Catálogo de Proyectos</h2>
               <p className="text-gray-500">Explora las investigaciones y desarrollos de esta gestión.</p>
             </div>
-            {/* Filter button mockup */}
-            <button className="hidden sm:flex items-center justify-center w-10 h-10 bg-white rounded-full border border-gray-200 shadow-sm text-gray-500 hover:text-[#005c4b]">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-            </button>
           </div>
           
           <div className="flex flex-col gap-6">
-            {projects.map((project) => (
+            {(showAllProjects ? projects : projects.slice(0, 3)).map((project, idx) => (
               <ProjectCard 
-                key={project.id}
-                projectId={project.id}
-                imageSrc={project.imageSrc}
-                category={project.category}
-                title={project.title}
-                description={project.description}
+                key={project.id_proyecto || project.id || idx}
+                projectId={project.id_proyecto?.toString() || project.id}
+                imageSrc={project.imageSrc || "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                category={project.area_tematica || project.category || "General"}
+                title={project.titulo || project.title}
+                description={project.descripcion || project.description || ""}
               />
             ))}
           </div>
+
+          {/* Ver todos los proyectos */}
+          {projects.length > 3 && !showAllProjects && (
+            <div className="mt-10 text-center">
+              <button 
+                onClick={() => setShowAllProjects(true)}
+                className="inline-flex items-center gap-2 bg-[#005c4b] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#004a3c] transition-colors shadow-sm"
+              >
+                Ver todos los proyectos
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
+          {showAllProjects && (
+            <div className="mt-10 text-center">
+              <button 
+                onClick={() => setShowAllProjects(false)}
+                className="inline-flex items-center gap-2 bg-white text-[#005c4b] border border-[#005c4b] px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                Ver menos
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>

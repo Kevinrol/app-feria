@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../components/Button';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck, BarChart3, GraduationCap, Briefcase, Key } from 'lucide-react';
+import { registerUsuario } from '../api/fetch';
 
 export const Signup: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -14,21 +15,54 @@ export const Signup: React.FC = () => {
   const [apellido, setApellido] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // Jurado specific
   const [institucion, setInstitucion] = useState('');
   const [especialidad, setEspecialidad] = useState('');
   const [clave, setClave] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Participante specific
   const [tipoParticipante, setTipoParticipante] = useState<'Estudiante' | 'Docente'>('Estudiante');
   const [carrera, setCarrera] = useState('');
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup with role", role);
-    navigate('/login');
+    if (!isJurado && !aceptaTerminos) {
+      setError('Debes aceptar los términos y condiciones');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+
+    const payload = {
+      role: isJurado ? 'jurado' : tipoParticipante.toLowerCase(),
+      ci,
+      nombre,
+      apellido,
+      telefono,
+      correo: email,
+      password,
+      carrera: !isJurado ? carrera : undefined,
+      institucion: isJurado ? institucion : undefined,
+      especialidad: isJurado ? especialidad : undefined,
+      clave: isJurado ? clave : undefined
+    };
+
+    try {
+      await registerUsuario(payload);
+      // Registro exitoso, navegar a login
+      navigate(`/login?role=${payload.role === 'jurado' ? 'jurado' : 'participante'}`);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al registrar usuario. Verifica tus datos.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isJurado = role === 'jurado';
@@ -121,6 +155,12 @@ export const Signup: React.FC = () => {
             <p className="font-description text-gray-500 mb-8 text-sm italic">
               Complete todos los campos para activar su credencial de evaluador.
             </p>
+          )}
+
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 text-red-700 border border-red-200 rounded-md text-sm font-medium">
+              {error}
+            </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSignup}>
@@ -250,14 +290,31 @@ export const Signup: React.FC = () => {
                     <Key className="w-4 h-4 text-red-600 mr-2" />
                     <label className="block text-xs font-bold text-red-700 uppercase tracking-wider">Clave de Acceso Especial</label>
                   </div>
-                  <input
-                    type="password"
-                    required
-                    value={clave}
-                    onChange={(e) => setClave(e.target.value)}
-                    className="block w-full px-3 py-2 border border-red-200 rounded-md text-gray-900 focus:outline-none focus:ring-1 focus:ring-red-500 sm:text-sm bg-white"
-                    placeholder="Clave proporcionada por rectorado"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={clave}
+                      onChange={(e) => setClave(e.target.value)}
+                      className="block w-full px-3 py-2 border border-red-200 rounded-md text-gray-900 focus:outline-none focus:ring-1 focus:ring-red-500 sm:text-sm bg-white pr-10"
+                      placeholder="Clave proporcionada por rectorado"
+                    />
+                    <div 
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <svg className="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <p className="text-[10px] text-red-500 uppercase mt-2 font-bold tracking-wider">Campo obligatorio para validación de rol administrativo</p>
                 </div>
               </>
@@ -275,6 +332,36 @@ export const Signup: React.FC = () => {
                     className="block w-full px-3 py-2.5 bg-gray-100 border border-transparent rounded-md text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#005c4b] sm:text-sm"
                     placeholder="usuario@incos.edu.bo"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                    Contraseña
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="block w-full px-3 py-2.5 bg-gray-100 border border-transparent rounded-md text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#005c4b] sm:text-sm pr-10"
+                      placeholder="••••••••••••"
+                    />
+                    <div 
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <svg className="w-5 h-5 text-gray-400 hover:text-[#005c4b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-400 hover:text-[#005c4b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Carrera</label>
@@ -310,8 +397,8 @@ export const Signup: React.FC = () => {
                   </div>
                   
                   <div className="ml-auto">
-                    <Button type="submit" variant="primary" className="py-2.5 px-6 font-bold uppercase rounded-md text-sm bg-[#004a3c] hover:bg-[#003d32] whitespace-nowrap">
-                      Finalizar Registro
+                    <Button type="submit" variant="primary" className="py-2.5 px-6 font-bold uppercase rounded-md text-sm bg-[#004a3c] hover:bg-[#003d32] whitespace-nowrap" disabled={loading}>
+                      {loading ? 'Registrando...' : 'Finalizar Registro'}
                     </Button>
                   </div>
                 </div>
@@ -320,8 +407,8 @@ export const Signup: React.FC = () => {
 
             {isJurado && (
               <div className="pt-4">
-                <Button type="submit" variant="primary" className="w-full py-4 text-sm tracking-wide font-bold rounded-lg bg-[#004a3c] hover:bg-[#003d32]">
-                  Finalizar Registro de Evaluador {`>`}
+                <Button type="submit" variant="primary" className="w-full py-4 text-sm tracking-wide font-bold rounded-lg bg-[#004a3c] hover:bg-[#003d32]" disabled={loading}>
+                  {loading ? 'Procesando...' : 'Finalizar Registro de Evaluador >'}
                 </Button>
                 <p className="text-center text-[10px] text-gray-400 mt-4 leading-relaxed">
                   Al registrarse, acepta los términos de confidencialidad académica institucionales de INCOS.

@@ -24,9 +24,9 @@ export const Header: React.FC = () => {
             <a href="#proyectos" className="text-gray-500 hover:text-gray-900 font-medium py-2 transition-colors">
               Proyectos
             </a>
-            <a href="#resultados" className="text-gray-500 hover:text-gray-900 font-medium py-2 transition-colors">
+            <Link to="/resultados" className="text-gray-500 hover:text-gray-900 font-medium py-2 transition-colors">
               Resultados
-            </a>
+            </Link>
           </nav>
           
           <div className="flex items-center space-x-4">

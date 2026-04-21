@@ -12,22 +12,22 @@ export const Dashboard: React.FC = () => {
           <span className="text-xl font-bold text-[#005c4b]">Panel admin</span>
         </div>
         <nav className="flex-1 py-6 px-4 space-y-2">
-          <a href="#" className="flex items-center px-4 py-3 bg-[#e6f2ef] text-[#005c4b] rounded-lg font-medium">
+          <Link to="/dashboard" className="flex items-center px-4 py-3 bg-[#e6f2ef] text-[#005c4b] rounded-lg font-medium">
             <LayoutDashboard className="w-5 h-5 mr-3" />
             Dashboard
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+          </Link>
+          <Link to="/dashboard" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
             <FolderOpen className="w-5 h-5 mr-3" />
             Proyectos
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+          </Link>
+          <Link to="/dashboard" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
             <Users className="w-5 h-5 mr-3" />
             Usuarios
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+          </Link>
+          <Link to="/dashboard" className="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">
             <Settings className="w-5 h-5 mr-3" />
             Configuración
-          </a>
+          </Link>
         </nav>
         <div className="p-4 border-t border-gray-100">
           <Link to="/" className="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
@@ -53,7 +53,7 @@ export const Dashboard: React.FC = () => {
         <div className="p-8 flex-1 overflow-y-auto">
           <div className="mb-8 flex justify-between items-center">
             <h2 className="text-lg font-medium text-gray-700">Bienvenido al sistema de administración</h2>
-            <Button variant="primary" className="flex items-center">
+            <Button variant="primary" className="flex items-center" onClick={() => alert('Función de nuevo proyecto en desarrollo')}>
               <Plus className="w-4 h-4 mr-2" />
               Nuevo Proyecto
             </Button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Shield, User, GraduationCap, ArrowLeft, Gavel } from 'lucide-react';
+import { Shield, GraduationCap, ArrowLeft, Gavel } from 'lucide-react';
 
 export const RoleSelection: React.FC = () => {
   const [searchParams] = useSearchParams();

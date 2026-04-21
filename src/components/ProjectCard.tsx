@@ -24,8 +24,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           <span className="text-xs font-semibold text-[#005c4b] bg-[#e6f2ef] px-2 py-1 rounded">CATEGORÍA</span>
           <span className="text-xs text-gray-500 font-medium">{category}</span>
         </div>
-        <h3 className="font-heading text-xl font-bold text-[#005c4b] mb-2">{title}</h3>
-        <p className="font-description text-sm text-[#374151] line-clamp-2">{description}</p>
+        <h3 className="font-heading text-xl font-bold mb-2">{title}</h3>
+        <p className="text-sm text-[#374151] line-clamp-2">{description}</p>
       </div>
       
       <div className="flex-shrink-0 flex items-center justify-end sm:justify-center w-full sm:w-auto mt-4 sm:mt-0">
