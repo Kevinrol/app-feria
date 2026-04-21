@@ -20,6 +20,7 @@ export const AdminEstudiantes: React.FC = () => {
   const [carreras, setCarreras] = useState<any[]>([]);
   const [formData, setFormData] = useState({ ci: '', nombre: '', apellido: '', telefono: '', correo: '', id_carrera: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = () => {
     setLoading(true);

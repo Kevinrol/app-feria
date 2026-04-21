@@ -20,6 +20,7 @@ export const AdminJurados: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ ci: '', nombre: '', apellido: '', institucion: '', especialidad: '', telefono: '', correo: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = () => {
     setLoading(true);

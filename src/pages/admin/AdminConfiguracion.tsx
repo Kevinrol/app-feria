@@ -29,6 +29,8 @@ export const AdminConfiguracion: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ nombre_criterio: '', descripcion: '', puntaje_maximo: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
 
   const loadData = () => {
     setLoading(true);

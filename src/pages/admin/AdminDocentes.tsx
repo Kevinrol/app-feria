@@ -19,6 +19,7 @@ export const AdminDocentes: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ ci: '', nombre: '', apellido: '', telefono: '', correo: '', especialidad: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadData = () => {
     setLoading(true);

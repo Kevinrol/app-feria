@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, MoreVertical, Download, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Download, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchProjects, createProject, deleteProject, fetchCareers, fetchDocentes } from '../../api/fetch';
 import { Modal } from '../../components/Modal';
 
@@ -22,6 +22,9 @@ export const AdminProyectos: React.FC = () => {
   const [docentes, setDocentes] = useState<any[]>([]);
   const [formData, setFormData] = useState({ titulo: '', descripcion: '', area_tematica: '', id_carrera: '', id_docente: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const loadData = () => {
     setLoading(true);
@@ -46,7 +49,8 @@ export const AdminProyectos: React.FC = () => {
       await createProject({
         ...formData,
         id_carrera: parseInt(formData.id_carrera),
-        id_docente: parseInt(formData.id_docente)
+        id_docente: parseInt(formData.id_docente),
+        fecha_registro: new Date().toISOString()
       });
       setIsModalOpen(false);
       setFormData({ titulo: '', descripcion: '', area_tematica: '', id_carrera: '', id_docente: '' });
@@ -82,6 +86,10 @@ export const AdminProyectos: React.FC = () => {
   const registrados = projects.filter(p => !p.evaluaciones || p.evaluaciones.length === 0).length;
   const enEvaluacion = projects.filter(p => p.evaluaciones?.length > 0 && p.evaluaciones.some((e: any) => e.puntaje_total === null)).length;
   const evaluados = projects.filter(p => p.evaluaciones?.length > 0 && p.evaluaciones.every((e: any) => e.puntaje_total !== null)).length;
+
+  const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProjects = projects.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="p-8 relative min-h-screen">
@@ -146,7 +154,7 @@ export const AdminProyectos: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {projects.map((proj) => {
+                {paginatedProjects.map((proj) => {
                   const status = getStatusInfo(proj);
                   return (
                     <tr key={proj.id_proyecto} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
@@ -196,8 +204,27 @@ export const AdminProyectos: React.FC = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between p-5 border-t border-gray-100 text-[11px] text-gray-400 font-medium">
-          <div>Mostrando {projects.length} proyectos registrados</div>
+        <div className="flex items-center justify-between p-5 border-t border-gray-100 text-[11px] text-gray-400 font-medium bg-gray-50/50">
+          <div>Mostrando {paginatedProjects.length} de {projects.length} proyectos</div>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-1 rounded text-gray-400 hover:text-[#005c4b] hover:bg-emerald-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-gray-400 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-gray-600 font-bold">
+              Página {currentPage} de {totalPages || 1}
+            </span>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="p-1 rounded text-gray-400 hover:text-[#005c4b] hover:bg-emerald-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-gray-400 transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 
