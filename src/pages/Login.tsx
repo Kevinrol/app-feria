@@ -175,7 +175,7 @@ export const Login: React.FC = () => {
           </div>
           
           <div className="mt-8 flex justify-between text-[10px] text-gray-400 uppercase tracking-wider font-bold">
-            <span>© 2024 INCOS FERIA TÉCNICA</span>
+            <span>© 2026 INCOS FERIA TÉCNICA</span>
             <div className="space-x-4">
               <a href="#" className="hover:text-gray-600">Privacidad</a>
               <a href="#" className="hover:text-gray-600">Soporte</a>
