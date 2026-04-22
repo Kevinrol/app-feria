@@ -9,7 +9,7 @@ interface RankedProject {
   carrera: string;
   promedio: number;
   evalCount: number;
-  maxEvals: number
+  maxEvals: number;
   isFinalist: boolean;
 }
 
