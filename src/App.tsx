@@ -17,16 +17,22 @@ import { AdminAsignaciones } from './pages/admin/AdminAsignaciones'
 import { AdminResultados } from './pages/admin/AdminResultados'
 import { AdminProyectos } from './pages/admin/AdminProyectos'
 
+import { DocenteLayout } from './components/DocenteLayout'
+import { DocenteProyectos } from './pages/docente/DocenteProyectos'
+
+import { ProyectoDetalle } from './pages/ProyectoDetalle'
+
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
   const isAdmin = location.pathname.startsWith('/admin')
+  const isDocente = location.pathname.startsWith('/docente')
   const isLogin = location.pathname === '/login'
   const isSelectRole = location.pathname === '/select-role'
   const isSignup = location.pathname === '/signup'
   const isResultados = location.pathname === '/resultados'
 
-  if (isDashboard || isLogin || isSelectRole || isSignup || isAdmin || isResultados) {
+  if (isDashboard || isLogin || isSelectRole || isSignup || isAdmin || isDocente || isResultados) {
     return <>{children}</>
   }
 
@@ -45,6 +51,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/proyectos/:id" element={<ProyectoDetalle />} />
           <Route path="/select-role" element={<RoleSelection />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -60,6 +67,10 @@ function App() {
             <Route path="configuracion" element={<AdminConfiguracion />} />
             <Route path="asignaciones" element={<AdminAsignaciones />} />
             <Route path="resultados" element={<AdminResultados />} />
+          </Route>
+
+          <Route path="/docente" element={<DocenteLayout />}>
+            <Route path="proyectos" element={<DocenteProyectos />} />
           </Route>
         </Routes>
       </Layout>

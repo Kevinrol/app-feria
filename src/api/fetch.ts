@@ -105,6 +105,11 @@ export const fetchEstudiantesByCarrera = async (idCarrera: number) => {
   return response.data;
 };
 
+export const fetchEstudiantesDisponibles = async (idCarrera: number) => {
+  const response = await api.get(`/estudiante/carrera/${idCarrera}/disponibles`);
+  return response.data;
+};
+
 export const createEstudiante = async (data: any) => {
   const response = await api.post('/estudiante', data);
   return response.data;
